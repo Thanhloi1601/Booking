@@ -13,7 +13,7 @@ let handleUserLogin = (email, password) => {
         // compare password
 
         let user = await db.User.findOne({
-          attributes: ["email", "roleId", "password"],
+          attributes: ["email", "roleId", "password", "firstName", "lastName"],
           where: { email: email },
           raw: true,
         });
@@ -112,7 +112,7 @@ let createNewUser = (data) => {
           errCode: 1,
           errMessage: " Email cua ban da duoc dung",
         });
-      }else{
+      } else {
         let hashPasswordFromBcrypt = await hashUserPassword(data.password);
         await db.User.create({
           email: data.email,
@@ -129,7 +129,6 @@ let createNewUser = (data) => {
           message: "OK",
         });
       }
-      
     } catch (e) {
       reject(e);
     }
@@ -159,9 +158,7 @@ let deleteUser = (userId) => {
 let updateUserData = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      
       if (!data.id) {
-       
         resolve({
           errCode: 2,
           errMessage: "Missing required parameters",
@@ -172,9 +169,9 @@ let updateUserData = (data) => {
         raw: false,
       });
       if (user) {
-        user.firstName = data.firstName,
-          user.lastName = data.lastName,
-          user.address = data.address;
+        (user.firstName = data.firstName),
+          (user.lastName = data.lastName),
+          (user.address = data.address);
 
         await user.save();
 
@@ -193,11 +190,33 @@ let updateUserData = (data) => {
     }
   });
 };
- 
+let getAllcodeService = (typeInput) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!typeInput) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters",
+        });
+      } else {
+        let res = {};
+        let allcode = await db.Allcode.findAll({
+          where: { type: typeInput },
+        });
+        res.errCode = 0;
+        res.data = allcode;
+        resolve(res);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   handleUserLogin: handleUserLogin,
   getAllUsers: getAllUsers,
   createNewUser: createNewUser,
   deleteUser: deleteUser,
   updateUserData: updateUserData,
+  getAllcodeService: getAllcodeService,
 };
