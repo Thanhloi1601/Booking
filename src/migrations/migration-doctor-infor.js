@@ -1,36 +1,50 @@
 "use strict";
+
+const clinic = require("../models/clinic");
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("bookings", {
-      // statusId: DataTypes.STRING,
-      // doctorId: DataTypes.INTEGER,
-      // patienId: DataTypes.INTEGER,
-      // date: DataTypes.DATE,
-      // timeType: DataTypes.STRING,
+    await queryInterface.createTable("doctor_infor", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      statusId: {
-        type: Sequelize.STRING,
-      },
+
       doctorId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
       },
-      patientId: {
+      priceId: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      provinceId: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      paymentId: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      addressClinic: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      nameClinic: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      note: {
+        type: Sequelize.STRING,
+      },
+      count: {
+        allowNull: false,
         type: Sequelize.INTEGER,
+        defaultValue:0,
       },
-      date: {
-        type: Sequelize.STRING,
-      },
-      timeType: {
-        type: Sequelize.STRING,
-      },
-      token: {
-        type: Sequelize.STRING,
-      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -43,6 +57,6 @@ module.exports = {
   },
   down: async (queryInterface, Sequelize) => {
     // delete table
-    await queryInterface.dropTable("bookings");
+    await queryInterface.dropTable("doctor_infor");
   },
 };
