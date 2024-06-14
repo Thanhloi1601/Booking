@@ -14,11 +14,14 @@ let postBookAppointment = (data) => {
         !data.email ||
         !data.doctorId ||
         !data.timeType ||
-        !data.date
+        !data.date ||
+        !data.selectedGender ||
+        !data.address
       ) {
         resolve({
           errCode: 1,
           errMessage: "Missing required parameter",
+          data,
         });
       } else {
         let token = uuidv4();
@@ -37,6 +40,9 @@ let postBookAppointment = (data) => {
           defaults: {
             email: data.email,
             roleId: "R3",
+            gender: data.selectedGender,
+            address: data.address,
+            firstName: data.fullName,
           },
         });
 
@@ -76,27 +82,27 @@ let postVerifyBookAppointment = (data) => {
           errMessage: "Missing required parameter",
         });
       } else {
-
         let appointment = await db.Booking.findOne({
-          where:{
+          where: {
             doctorId: data.doctorId,
-            token:data.token,
-            statusId:"S1"
+            token: data.token,
+            statusId: "S1",
           },
-          raw:false
-        })
-        if(appointment ){
-          appointment.statusId ="S2"
+          raw: false,
+        });
+        if (appointment) {
+          appointment.statusId = "S2";
           await appointment.save();
           resolve({
-            errCode:0,
-            errMessage:"Update the appointment succeed "
-          })
-        }else{
+            errCode: 0,
+            errMessage: "Update the appointment succeed ",
+          });
+        } else {
           resolve({
-            errCode:2,
-            errMessage:"Appointment schedule has been activated or does not exist"
-          })
+            errCode: 2,
+            errMessage:
+              "Appointment schedule has been activated or does not exist",
+          });
         }
       }
     } catch (e) {

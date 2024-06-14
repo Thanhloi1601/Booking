@@ -54,6 +54,65 @@ let getBodyHTMLEmail = (dataSend) => {
   }
   return result;
 };
+let getBodyHTMLEmailRemedy = (dataSend) => {
+  let result = "";
+  if (dataSend.language === "vi") {
+    result = `
+                <h3>Xin chào ${dataSend.patientName}!</h3>
+                <p>Bạn nhận được email này vì đã đặt lịch khám bệnh thành công</p>
+               <p>Thông tin đơn thuốc/hoá đơn đucợ gửi teong thư đính kèm </p>
+                <div>Xin chân thành cảm ơn!</div>
+    `;
+  }
+  if (dataSend.language === "en") {
+    result = `
+          <h3>Dear ${dataSend.patientName}!</h3>
+          <p>You received this email because you have successfully scheduled a medical examination</p>
+          <p>Prescription/invoice information is sent in the attached letter</p>
+          <div>Sincerely thank!</div>
+          `;
+  }
+
+  return result;
+};
+let sendAttackhment = async (dataSend) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // Use `true` for port 465, `false` for all other ports
+        auth: {
+          user: process.env.EMAIL_APP,
+          pass: process.env.EMAIL_APP_PASSWORD,
+        },
+      });
+
+      let info = await transporter.sendMail({
+        from: '"Thành Lợi" <chauthanhloi2k4@gmail.com>', // sender address
+        to: dataSend.email, // list of receivers
+        subject: "Kết quả đặt lịch khám bệnh", // Subject line
+
+        html: getBodyHTMLEmailRemedy(dataSend),
+        attachments: [
+          {
+            // define custom content type for the attachment
+            filename: `remedy-${
+              dataSend.patientId
+            }-${new Date().getTime()}.png`,
+            content: dataSend.imgBase64.split("base64,")[1],
+            encoding: "base64",
+          },
+        ],
+      });
+
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   sendSimpleEmail: sendSimpleEmail,
+  sendAttackhment: sendAttackhment,
 };
